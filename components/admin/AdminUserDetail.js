@@ -9,10 +9,6 @@ import {
   apiRejectRequest,
   apiRevertRequest,
   apiDecideKyc,
-  apiSetBalance,
-  apiAdjustBalance,
-  apiSetProfit,
-  apiAddProfit,
   apiSetStatus,
   apiDeleteUser,
   apiSendNotification,
@@ -27,6 +23,7 @@ import {
   IconPulse,
   IconBell,
 } from '../DeskIcons';
+import AccountFiguresForm from './AccountFiguresForm';
 
 // Everything about one user on a single screen: profile, money controls,
 // KYC, their deposits/withdrawals, and their support thread.
@@ -110,8 +107,9 @@ export default function AdminUserDetail({ user, requests, kycDocs, onBack, onCha
       </div>
 
       {/* Snapshot */}
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Balance" value={formatUSD(user.balance, { cents: true })} />
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <Stat label="Total balance" value={formatUSD(user.balance, { cents: true })} />
+        <Stat label="Deposits" value={formatUSD(user.deposit_total || 0, { cents: true })} />
         <Stat label="Profit" value={formatUSD(user.profit || 0, { cents: true })} tone={Number(user.profit || 0) >= 0 ? 'gain' : 'loss'} />
         <Stat label="Country" value={user.country || '—'} plain />
         <Stat label="Phone" value={user.phone || '—'} plain />
@@ -120,16 +118,9 @@ export default function AdminUserDetail({ user, requests, kycDocs, onBack, onCha
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {/* Money controls */}
         <div className="tile p-6">
-          <SectionTitle icon={IconWalletLine} title="Balance & profit" />
-          <div className="mt-4 space-y-4">
-            <MoneyAction label="Set balance" hint="Overwrites the available balance." cta="Set"
-              onSubmit={(v) => act(() => apiSetBalance(user.id, v))} initial={String(user.balance)} />
-            <MoneyAction label="Credit / debit" hint="Add (+) to or deduct (−) from the balance." cta="Apply" signed
-              onSubmit={(v) => act(() => apiAdjustBalance(user.id, v))} placeholder="e.g. 250" clearOnSubmit />
-            <MoneyAction label="Add / reduce profit" hint="Adjusts balance and reported profit by ± this amount." cta="Apply" signed
-              onSubmit={(v) => act(() => apiAddProfit(user.id, v))} clearOnSubmit />
-            <MoneyAction label="Set profit figure" hint="Overwrites the profit shown to the user." cta="Set" signed
-              onSubmit={(v) => act(() => apiSetProfit(user.id, v))} initial={String(user.profit || 0)} />
+          <SectionTitle icon={IconWalletLine} title="Account figures" />
+          <div className="mt-4">
+            <AccountFiguresForm user={user} onChanged={onChanged} />
           </div>
         </div>
 
@@ -445,69 +436,6 @@ function Stat({ label, value, tone, plain }) {
       <div className={`mt-1.5 ${plain ? 'text-[14px] text-grey-100' : 'figure-md'} ${tone === 'gain' ? 'text-gain' : tone === 'loss' ? 'text-loss' : ''}`}>
         {value}
       </div>
-    </div>
-  );
-}
-
-function MoneyAction({ label, hint, cta, onSubmit, initial = '', placeholder = '0.00', signed, clearOnSubmit }) {
-  const [value, setValue] = useState(String(initial).replace(/-/g, ''));
-  const [sign, setSign] = useState(String(initial).trim().startsWith('-') ? -1 : 1);
-  const [busy, setBusy] = useState(false);
-  const [ok, setOk] = useState(false);
-
-  return (
-    <div>
-      <div className="mb-1.5 flex items-baseline justify-between gap-3">
-        <span className="text-[12px] font-medium text-white">{label}</span>
-        {ok && <span className="text-[11px] text-gain">Saved</span>}
-      </div>
-      <div className="flex gap-2">
-        {signed && (
-          // Sign toggle — so a minus never has to be typed (mobile numeric
-          // keypads don't have one). Pick − to deduct / reduce.
-          <div className="flex shrink-0 overflow-hidden rounded-lg border border-line">
-            <button
-              type="button"
-              onClick={() => setSign(1)}
-              className={`w-9 text-[16px] font-semibold ${sign === 1 ? 'bg-gain/20 text-gain' : 'text-grey-500 hover:text-white'}`}
-            >
-              +
-            </button>
-            <button
-              type="button"
-              onClick={() => setSign(-1)}
-              className={`w-9 border-l border-line text-[16px] font-semibold ${sign === -1 ? 'bg-loss/20 text-loss' : 'text-grey-500 hover:text-white'}`}
-            >
-              −
-            </button>
-          </div>
-        )}
-        <div className="relative flex-1">
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-grey-500">$</span>
-          <input
-            inputMode="decimal"
-            className="input py-2.5 pl-6 text-[14px]"
-            placeholder={placeholder}
-            value={value}
-            onChange={(e) => setValue(e.target.value.replace(/[^0-9.]/g, ''))}
-          />
-        </div>
-        <Button
-          loading={busy}
-          onClick={async () => {
-            setBusy(true);
-            await onSubmit((signed ? sign : 1) * Number(value));
-            setBusy(false);
-            if (clearOnSubmit) setValue('');
-            setOk(true);
-            setTimeout(() => setOk(false), 1500);
-          }}
-          className="btn-solid btn-sm shrink-0"
-        >
-          {cta}
-        </Button>
-      </div>
-      {hint && <p className="mt-1 text-[11px] text-grey-500">{hint}</p>}
     </div>
   );
 }

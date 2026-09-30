@@ -69,6 +69,7 @@ create table if not exists profiles (
   kyc_status kyc_status not null default 'none',
   kyc_note text not null default '',
   balance numeric(14, 2) not null default 0,
+  deposit_total numeric(14, 2) not null default 0,
   profit numeric(14, 2) not null default 0,
   unread_for_user integer not null default 0,
   unread_for_admin integer not null default 0,

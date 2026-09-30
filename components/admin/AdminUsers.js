@@ -4,14 +4,11 @@ import { useState } from 'react';
 import Modal from '../Modal';
 import { formatUSD } from '@/lib/store';
 import {
-  apiSetBalance,
-  apiAdjustBalance,
-  apiAddProfit,
-  apiSetProfit,
   apiSetStatus,
   apiDeleteUser,
 } from '@/lib/api';
 import { IconTrash, IconVerified } from '../DeskIcons';
+import AccountFiguresForm from './AccountFiguresForm';
 
 export default function AdminUsers({ users, onChanged }) {
   const [editing, setEditing] = useState(null);
@@ -128,10 +125,6 @@ export default function AdminUsers({ users, onChanged }) {
 }
 
 function ManageUser({ user, onClose, onChanged }) {
-  const [balance, setBalance] = useState(String(user.balance));
-  const [credit, setCredit] = useState('');
-  const [profit, setProfit] = useState('');
-  const [setProfitVal, setSetProfitVal] = useState(String(user.profit || 0));
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -150,8 +143,9 @@ function ManageUser({ user, onClose, onChanged }) {
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-3 sm:grid-cols-3">
-        <Mini label="Balance" value={formatUSD(user.balance, { cents: true })} />
+      <div className="grid gap-3 sm:grid-cols-4">
+        <Mini label="Total balance" value={formatUSD(user.balance, { cents: true })} />
+        <Mini label="Deposits" value={formatUSD(user.deposit_total || 0, { cents: true })} />
         <Mini label="Profit" value={formatUSD(user.profit || 0, { cents: true })} tone={Number(user.profit || 0) >= 0 ? 'gain' : 'loss'} />
         <Mini label="Verification" value={user.kyc_status} />
       </div>
@@ -162,59 +156,8 @@ function ManageUser({ user, onClose, onChanged }) {
         <Mini label="City" value={user.city || '—'} />
       </div>
 
-      {/* Set balance */}
-      <Section title="Set balance" hint="Overwrites the available balance outright.">
-        <div className="flex gap-2">
-          <MoneyInput value={balance} onChange={setBalance} />
-          <button
-            disabled={busy}
-            onClick={() => run(() => apiSetBalance(user.id, Number(balance))).then(() => flash('Balance updated.'))}
-            className="btn-solid btn-sm shrink-0"
-          >
-            Set
-          </button>
-        </div>
-      </Section>
-
-      {/* Credit / debit */}
-      <Section title="Credit or debit" hint="Adds to (or subtracts from) the current balance.">
-        <div className="flex gap-2">
-          <MoneyInput value={credit} onChange={setCredit} placeholder="e.g. 500 or -250" allowNegative />
-          <button
-            disabled={busy}
-            onClick={() => run(() => apiAdjustBalance(user.id, Number(credit))).then(() => { setCredit(''); flash('Balance adjusted.'); })}
-            className="btn-outline btn-sm shrink-0"
-          >
-            Apply
-          </button>
-        </div>
-      </Section>
-
-      {/* Profit */}
-      <Section title="Add profit" hint="Credits the balance and increases reported profit.">
-        <div className="flex gap-2">
-          <MoneyInput value={profit} onChange={setProfit} allowNegative />
-          <button
-            disabled={busy}
-            onClick={() => run(() => apiAddProfit(user.id, Number(profit))).then(() => { setProfit(''); flash('Profit added.'); })}
-            className="btn-solid btn-sm shrink-0"
-          >
-            Add
-          </button>
-        </div>
-      </Section>
-
-      <Section title="Set profit figure" hint="Overwrites the profit shown on their dashboard.">
-        <div className="flex gap-2">
-          <MoneyInput value={setProfitVal} onChange={setSetProfitVal} allowNegative />
-          <button
-            disabled={busy}
-            onClick={() => run(() => apiSetProfit(user.id, Number(setProfitVal))).then(() => flash('Profit set.'))}
-            className="btn-outline btn-sm shrink-0"
-          >
-            Set
-          </button>
-        </div>
+      <Section title="Account figures" hint="Set deposits and profit directly. Total balance is calculated automatically.">
+        <AccountFiguresForm user={user} onChanged={onChanged} />
       </Section>
 
       <Section title="Account status">
@@ -244,23 +187,6 @@ function Section({ title, hint, children }) {
         {hint && <div className="mt-0.5 text-[11px] text-grey-500">{hint}</div>}
       </div>
       {children}
-    </div>
-  );
-}
-
-function MoneyInput({ value, onChange, placeholder = '0.00', allowNegative }) {
-  return (
-    <div className="relative flex-1">
-      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-grey-500">$</span>
-      <input
-        inputMode="decimal"
-        className="input py-2.5 pl-6 text-[14px]"
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) =>
-          onChange(e.target.value.replace(allowNegative ? /[^0-9.-]/g : /[^0-9.]/g, ''))
-        }
-      />
     </div>
   );
 }

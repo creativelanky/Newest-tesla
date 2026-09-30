@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import DepositFlow from './DepositFlow';
 import WithdrawFlow from './WithdrawFlow';
-import { useStore, formatUSD, positionEquity, positionPnL, portfolioValue, netFunded } from '@/lib/store';
+import { useStore, formatUSD, positionEquity, positionPnL, portfolioValue } from '@/lib/store';
 import { useAccount as useRealAccount } from '@/lib/useAccount';
 import { useMarket, quoteStats } from '@/lib/market';
 import { optionPremium } from '@/lib/options';
@@ -52,9 +52,9 @@ function useSimAccount() {
 }
 
 // Greeting + balance cards, in plain-English terms. The primary card shows the
-// total balance and carries deposit / withdraw directly beneath it. Cash,
+// total balance and carries deposit / withdraw directly beneath it. Deposits,
 // profit, KYC status and identity are real (Postgres via /api/me); invested
-// value is the simulated-market side layered on top.
+// value remains a separate simulated-market view.
 export function Balances() {
   const real = useRealAccount();
   const sim = useSimAccount();
@@ -63,10 +63,10 @@ export function Balances() {
 
   const profile = real.profile;
   const first = (profile.name || 'Investor').split(' ')[0];
-  const accountValue = Number(profile.balance) + sim.invested;
-  const funded = netFunded({ transactions: real.transactions });
+  const accountValue = Number(profile.balance) || 0;
+  const deposits = Number(profile.deposit_total) || 0;
   const profit = Number(profile.profit) || 0;
-  const profitPct = funded > 0 ? (profit / funded) * 100 : 0;
+  const profitPct = deposits > 0 ? (profit / deposits) * 100 : 0;
   const kyc = profile.kyc_status;
 
   // onSubmitted fires right after a successful API call, while the flow
@@ -203,7 +203,7 @@ export function Balances() {
         />
         <Card
           label="Total deposits"
-          value={formatUSD(Math.max(0, funded), { cents: true })}
+          value={formatUSD(deposits, { cents: true })}
           hint="Money you've added, net of withdrawals"
           icon={IconArrowDownLeft}
           accent="#4f8bff"

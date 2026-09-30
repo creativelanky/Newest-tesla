@@ -82,7 +82,10 @@ begin
     raise exception 'Amount exceeds your available balance.';
   end if;
 
-  update profiles set balance = balance - p_amount where id = auth.uid();
+  update profiles
+  set balance = balance - p_amount,
+      deposit_total = deposit_total - p_amount
+  where id = auth.uid();
 
   insert into transactions (profile_id, type, label, amount)
   values (auth.uid(), 'debit', 'Withdrawal requested - ' || p_method::text, p_amount);
@@ -211,7 +214,7 @@ begin
   if not found then raise exception 'Request is not pending.'; end if;
 
   if r.kind = 'deposit' then
-    update profiles set balance = balance + r.amount where id = r.profile_id;
+    update profiles set balance = balance + r.amount, deposit_total = deposit_total + r.amount where id = r.profile_id;
     insert into transactions (profile_id, type, label, amount)
     values (r.profile_id, 'credit', 'Deposit approved - ' || r.method::text, r.amount);
   else
@@ -238,7 +241,10 @@ begin
   if not found then raise exception 'Request is not pending.'; end if;
 
   if r.kind = 'withdrawal' then
-    update profiles set balance = balance + r.amount where id = r.profile_id;
+    update profiles
+    set balance = balance + r.amount,
+        deposit_total = deposit_total + r.amount
+    where id = r.profile_id;
     insert into transactions (profile_id, type, label, amount)
     values (r.profile_id, 'credit', 'Withdrawal declined - funds returned', r.amount);
   end if;
@@ -302,6 +308,49 @@ begin
   if not is_admin() then raise exception 'Admin only.'; end if;
   update profiles set profit = p_amount where id = p_user_id;
   if not found then raise exception 'User not found.'; end if;
+end;
+$$;
+
+-- The admin console edits the two source figures together. Balance is always
+-- derived from those figures so the dashboard cannot show conflicting totals.
+create or replace function admin_set_account_figures(
+  p_user_id uuid,
+  p_deposit_total numeric,
+  p_profit numeric
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_old_balance numeric;
+  v_balance numeric;
+  v_delta numeric;
+begin
+  if not is_admin() then raise exception 'Admin only.'; end if;
+  v_balance := p_deposit_total + p_profit;
+  if v_balance < 0 then raise exception 'Deposits plus profit cannot be below $0.'; end if;
+
+  select balance into v_old_balance from profiles where id = p_user_id;
+  if not found then raise exception 'User not found.'; end if;
+
+  update profiles
+  set deposit_total = p_deposit_total,
+      profit = p_profit,
+      balance = v_balance
+  where id = p_user_id;
+
+  v_delta := v_balance - v_old_balance;
+  if v_delta <> 0 then
+    insert into transactions (profile_id, type, label, amount)
+    values (
+      p_user_id,
+      (case when v_delta > 0 then 'credit' else 'debit' end)::tx_type,
+      'Account figures updated',
+      abs(v_delta)
+    );
+  end if;
 end;
 $$;
 
