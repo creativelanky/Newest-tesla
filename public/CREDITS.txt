@@ -1,0 +1,61 @@
+starship-ascent.jpg
+  Source: Wikimedia Commons — Starship-IFT2-ascent (cropped).jpg
+  License: CC BY-SA 4.0
+  Author: Osunpokeh
+
+starbase.jpg
+  Source: Wikimedia Commons — SpaceX Starbase launch facility (51438071556).jpg
+  License: CC BY-SA 2.0
+  Author: Lars Plougmann from United States
+
+dragon.jpg
+  Source: Wikimedia Commons — SpaceX Crew Dragon.jpg
+  License: Public domain
+  Author: NASA/SpaceX
+
+dragon-iss.jpg
+  Source: Wikimedia Commons — Crew Dragon Endeavour approaches the station (iss065e002848).jpg
+  License: Public domain
+  Author: NASA
+
+starlink-launch.jpg
+  Source: Wikimedia Commons — Starlink 10-50 Launches from Cape Canaveral Space Force Station (9793560).jpg
+  License: Public domain
+  Author: U.S. Space Force photo by Gwendolyn Kurzen
+
+raptor.jpg
+  Source: Wikimedia Commons — Raptor-test-9-25-2016.jpg
+  License: CC0
+  Author: Elon Musk
+
+droneship.jpg
+  Source: Wikimedia Commons — Falcon 9 first stage landing on Droneship.jpg
+  License: CC0
+  Author: SpaceX
+
+launch-streak.jpg
+  Source: Wikimedia Commons — SES9 Falcon9 Launch by SpaceX (25431492401).jpg
+  License: CC BY 2.0
+  Author: Michael Seeley from Melbourne, FL, United States
+
+mars.jpg
+  Source: Wikimedia Commons — PIA16453-MarsCuriosityRover-RocknestPanorama-20121126.jpg
+  License: Public domain
+  Author: NASA/JPL-Caltech/Malin Space Science Systems
+
+musk.jpg
+  Source: Wikimedia Commons — Elon Musk Royal Society.jpg
+  License: CC BY-SA 4.0
+  Author: Duncan.Hull
+
+hero-poster.jpg
+  Source: Wikimedia Commons — Falcon 9 Dragon Night Before Launch.jpg
+  License: CC0
+  Author: SpaceX
+
+hero.webm
+  Source: Wikimedia Commons — IMAP Liftoff, SpaceX Launch Angle 1 (KSC-20250924-MH-SPX01-0001)
+  License: Public domain (NASA)
+hero-2.webm
+  Source: Wikimedia Commons — NASA's SpaceX CRS-34 Mission Launch (KSC-20260515-MH-SPX01-0001)
+  License: Public domain (NASA)

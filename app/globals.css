@@ -1,0 +1,416 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* App / auth / admin default: Inter, with an Arial-first system fallback. */
+  --font-sans: var(--font-inter), Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: var(--font-sans);
+}
+
+/* Landing page keeps the Barlow "brand" look on HEADINGS only (anything using
+   the `font-display` utility / .h1–.h3). Body and other text inherit Inter
+   like the rest of the platform. Scoped to the landing page's root wrapper. */
+.brand-type {
+  --font-display: var(--font-brand), Roboto, Arial, Verdana, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #000;
+  /* Always reserve the scrollbar's space so the layout (and dashboard cards)
+     doesn't jump narrower when content grows and a scrollbar appears. */
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
+body {
+  @apply bg-ink text-white antialiased;
+}
+
+::selection {
+  background: #fff;
+  color: #000;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: #000;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[1400px] px-6 sm:px-10;
+  }
+
+  .container-tight {
+    @apply mx-auto w-full max-w-[1120px] px-6 sm:px-10;
+  }
+
+  /* Uppercase micro-label above headings */
+  .eyebrow {
+    @apply text-[11px] font-medium tracking-widest2 text-grey-400;
+  }
+
+  /* Display headings — DIN-like, tight, sentence case */
+  .h1 {
+    @apply font-display text-[clamp(2.6rem,7vw,6rem)] font-medium leading-[0.98] tracking-[0.002em];
+  }
+
+  .h2 {
+    @apply font-display text-[clamp(2rem,4.4vw,3.6rem)] font-medium leading-[1] tracking-[0.002em];
+  }
+
+  .h3 {
+    @apply font-display text-[clamp(1.35rem,2.2vw,1.9rem)] font-medium leading-tight tracking-[0.005em];
+  }
+
+  .body-lg {
+    @apply text-[19px] leading-relaxed text-grey-300;
+  }
+
+  .body {
+    @apply text-[16px] leading-relaxed text-grey-400;
+  }
+
+  /* Buttons — rounded, uppercase, letter-spaced */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-lg border px-8 py-3.5 text-[13px] font-semibold uppercase
+      tracking-wider2 transition-colors duration-200
+      focus:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-solid {
+    @apply btn border-white bg-white text-black hover:bg-grey-300 hover:border-grey-300;
+  }
+
+  .btn-outline {
+    @apply btn border-white/60 bg-transparent text-white hover:bg-white hover:text-black hover:border-white;
+  }
+
+  /* Glowing scarlet primary — the vivid call-to-action */
+  .btn-scarlet {
+    @apply btn border-0 text-white;
+    background-image: linear-gradient(135deg, #ff5a5f 0%, #e5484d 100%);
+    box-shadow: 0 8px 24px -8px rgba(229, 72, 77, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  .btn-scarlet:hover {
+    background-image: linear-gradient(135deg, #ff6d72 0%, #ef5459 100%);
+    box-shadow: 0 10px 30px -8px rgba(229, 72, 77, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-sm {
+    @apply px-5 py-2.5 text-[12px];
+  }
+
+  /* Panels — square corners, hairline borders */
+  .panel {
+    @apply border border-line bg-panel;
+  }
+
+  .panel-pad {
+    @apply p-6 sm:p-8;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-line bg-ink px-4 py-3.5 text-[16px] text-white
+      placeholder:text-grey-600 focus:border-white/40 focus:outline-none;
+  }
+
+  .label {
+    @apply mb-2 block text-[13px] font-medium tracking-wider2 text-grey-400;
+  }
+
+  .mono {
+    @apply font-mono tabular-nums;
+  }
+
+  /* Thin rule used between stat blocks */
+  .rule {
+    @apply border-t border-line;
+  }
+
+  .link-underline {
+    @apply relative text-white after:absolute after:bottom-[-3px] after:left-0 after:h-px after:w-0
+      after:bg-white after:transition-all after:duration-300 hover:after:w-full;
+  }
+
+  /* Cards — flat grey surface, one step above the black page for contrast */
+  .tile {
+    @apply rounded-xl border border-line bg-card;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  .tile-solid {
+    @apply rounded-xl border border-line bg-card;
+  }
+
+  /* Raised inner block used inside a card (lighter grey than the card) */
+  .subtile {
+    @apply rounded-lg border border-line bg-card2;
+  }
+
+  /* Consistent tile header + typographic scale for cards */
+  .tile-head {
+    @apply flex items-center justify-between gap-3 border-b border-line px-5 py-4;
+  }
+
+  /* Card headers sit back in grey — the numbers carry the emphasis */
+  .tile-title {
+    @apply text-[13px] font-semibold uppercase tracking-wider2 text-grey-300;
+  }
+
+  .tile-sub {
+    @apply text-[12px] text-grey-500;
+  }
+
+  /* Small icon chip used beside card titles */
+  .icon-chip {
+    @apply grid h-6 w-6 shrink-0 place-items-center rounded-md border border-line bg-card2 text-grey-400;
+  }
+
+  .stat-label {
+    @apply text-[12px] uppercase tracking-wider text-grey-500;
+  }
+
+  /* Figures — semibold + negative tracking reads finer than heavy bold */
+  .stat-value {
+    @apply font-sans font-semibold tracking-[-0.015em] text-white;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .figure-xl {
+    @apply stat-value text-[clamp(1.9rem,3.6vw,2.4rem)] leading-none;
+  }
+
+  .figure-md {
+    @apply stat-value text-[22px] leading-none;
+  }
+
+  .figure-sm {
+    @apply stat-value text-[16px] leading-none;
+  }
+
+  /* Tabular figures so columns of numbers align */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Tinted status chips */
+  .chip-gain {
+    @apply border-gain/30 bg-gain/10 text-gain;
+  }
+
+  .chip-loss {
+    @apply border-loss/30 bg-loss/10 text-loss;
+  }
+
+  /* Amber — flags something that needs attention */
+  .chip-warn {
+    @apply border-warn/40 bg-warn/[0.12] text-warn;
+  }
+
+  /* Table rows in the desk */
+  .row-hover {
+    @apply transition-colors hover:bg-white/[0.03];
+  }
+
+  /* The primary card on a page — a touch lighter grey so it reads as hero */
+  .tile-feature {
+    @apply relative overflow-hidden bg-card2;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-[12px] font-medium tracking-wide;
+  }
+
+  .seg-btn {
+    @apply rounded-md px-3 py-2 text-[12px] font-semibold uppercase tracking-wider2 transition-colors;
+  }
+
+  .num {
+    @apply font-mono tabular-nums;
+  }
+}
+
+/* Authed desk pages — deep space with saturated nebula glows so the black
+   reads as lit, and the coloured cards pop against it. */
+.app-shell {
+  position: relative;
+  background:
+    radial-gradient(900px 520px at 8% -8%, rgba(79, 139, 255, 0.16), transparent 60%),
+    radial-gradient(760px 480px at 100% -6%, rgba(162, 116, 255, 0.14), transparent 58%),
+    radial-gradient(700px 600px at 50% 120%, rgba(37, 214, 230, 0.08), transparent 60%),
+    #06070c;
+}
+
+/* Vivid hero card — deep scarlet, glowing edge, top sheen */
+.hero-aurora {
+  position: relative;
+  border: 1px solid rgba(229, 72, 77, 0.32);
+  background:
+    radial-gradient(600px 300px at 100% 0%, rgba(255, 90, 95, 0.24), transparent 62%),
+    radial-gradient(560px 320px at 0% 100%, rgba(180, 30, 40, 0.20), transparent 60%),
+    linear-gradient(150deg, #4a1518 0%, #340f14 42%, #1a0a0d 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 20px 60px -24px rgba(229, 72, 77, 0.55);
+}
+
+/* Coloured accent bar along the top of a stat card */
+.accent-top::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  border-radius: 12px 12px 0 0;
+  background: linear-gradient(90deg, var(--accent, #4f8bff), transparent 85%);
+}
+
+/* Coloured hover lift */
+.lift {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent, #4f8bff) 45%, transparent);
+  box-shadow: 0 16px 40px -22px var(--accent, #4f8bff);
+}
+
+/* Neon glow helpers */
+.glow-azure { box-shadow: 0 0 0 1px rgba(79, 139, 255, 0.35), 0 14px 40px -14px rgba(79, 139, 255, 0.6); }
+.text-azure { color: #4f8bff; }
+.text-cyan { color: #25d6e6; }
+.text-violet { color: #a274ff; }
+.text-scarlet { color: #ff8f8c; }
+
+/* Price tick flashes — brief colour wash when a live value changes */
+@keyframes flash-up {
+  0% { background-color: rgba(52, 211, 153, 0.30); color: #34d399; }
+  100% { background-color: transparent; }
+}
+@keyframes flash-down {
+  0% { background-color: rgba(248, 113, 113, 0.30); color: #f87171; }
+  100% { background-color: transparent; }
+}
+.flash-up { animation: flash-up 0.7s ease-out; border-radius: 5px; }
+.flash-down { animation: flash-down 0.7s ease-out; border-radius: 5px; }
+
+/* Breathing glow used on the primary/live cards */
+@keyframes breathe {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.85; }
+}
+.glow-ring {
+  position: relative;
+}
+.glow-ring::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, rgba(52, 211, 153, 0.55), rgba(52, 211, 153, 0) 45%, rgba(52, 211, 153, 0) 60%, rgba(52, 211, 153, 0.35));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: breathe 3.2s ease-in-out infinite;
+}
+
+/* Chart leading-point pulse */
+@keyframes dot-pulse {
+  0% { r: 3.5; opacity: 1; }
+  70% { r: 9; opacity: 0; }
+  100% { r: 3.5; opacity: 0; }
+}
+
+/* Live pulse dot */
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #34d399;
+}
+.live-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #34d399;
+  animation: live-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes live-ping {
+  0% { transform: scale(1); opacity: 0.7; }
+  80%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* Full-bleed media overlays */
+.overlay-dark {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.45) 35%,
+    rgba(0, 0, 0, 0.6) 75%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+}
+
+.overlay-side {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.65) 45%, rgba(0, 0, 0, 0.25) 100%);
+}
+
+.overlay-flat {
+  background: rgba(0, 0, 0, 0.62);
+}
+
+/* ── Admin console theme ──────────────────────────────────────────────
+   Blacker, flatter and higher-contrast than the trading app so it's easy
+   to scan and operate. Scoped to `.admin` — never touches user surfaces.
+   Compound selectors (.admin .x) outrank the Tailwind utilities they
+   override, so no !important is needed. */
+.admin {
+  background: #000;
+}
+
+/* Surfaces → neutral near-black (kills the blue-grey tint), flat */
+.admin .tile,
+.admin .tile-solid,
+.admin .tile-feature {
+  background-color: #0c0c0d;
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow: none;
+}
+.admin .subtile {
+  background-color: #16161a;
+  border-color: rgba(255, 255, 255, 0.09);
+}
+.admin .bg-card { background-color: #0c0c0d; }
+.admin .bg-card2 { background-color: #16161a; }
+.admin .bg-ink { background-color: #000; }
+.admin .border-line { border-color: rgba(255, 255, 255, 0.09); }
+.admin .icon-chip { background-color: #16161a; border-color: rgba(255, 255, 255, 0.1); color: #c6cacd; }
+
+/* Text → brighter greys for legibility on true black */
+.admin .text-grey-600 { color: #8a9096; }
+.admin .text-grey-500 { color: #a6abb0; }
+.admin .text-grey-400 { color: #c8ccd0; }
+.admin .text-grey-300 { color: #e2e4e7; }
+.admin .text-grey-200 { color: #edeef0; }
+.admin .text-grey-100 { color: #f6f7f8; }
+
+/* Labels (uppercase micro-text) — brighter than their default grey */
+.admin .stat-label { color: #9ca2a8; }
+.admin .tile-title { color: #e6e8ea; }
