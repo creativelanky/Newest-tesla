@@ -34,6 +34,7 @@ export default function AdminUserDetail({ user, requests, kycDocs, onBack, onCha
   const [suspendReason, setSuspendReason] = useState('');
   const [receipt, setReceipt] = useState(null);
   const [pending, setPending] = useState(null); // key of the action currently running
+  const [actionMessage, setActionMessage] = useState(null);
 
   const deposits = requests.filter((r) => r.profile_id === user.id && r.kind === 'deposit');
   const withdrawals = requests.filter((r) => r.profile_id === user.id && r.kind === 'withdrawal');
@@ -43,7 +44,12 @@ export default function AdminUserDetail({ user, requests, kycDocs, onBack, onCha
   async function act(fn, key) {
     if (key) setPending(key);
     const res = await fn();
-    if (res?.ok) onChanged();
+    if (res?.ok) {
+      setActionMessage(null);
+      onChanged();
+    } else {
+      setActionMessage(res?.error || 'The update could not be completed.');
+    }
     if (key) setPending((p) => (p === key ? null : p));
     return res;
   }
@@ -114,6 +120,9 @@ export default function AdminUserDetail({ user, requests, kycDocs, onBack, onCha
         <Stat label="Country" value={user.country || '—'} plain />
         <Stat label="Phone" value={user.phone || '—'} plain />
       </div>
+      {actionMessage && (
+        <p className="mt-4 rounded-md border border-loss/40 bg-loss/10 px-3 py-2 text-[12px] text-loss">{actionMessage}</p>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {/* Money controls */}
@@ -327,9 +336,12 @@ function FundingList({ title, icon: Icon, rows, onApprove, onReject, onRevert, o
 
 function FundingRow({ r, onApprove, onReject, onRevert, onReceipt }) {
   const [busy, setBusy] = useState(null); // 'approve' | 'reject' | 'revert' | null
+  const [error, setError] = useState(null);
   async function run(kind, fn) {
     setBusy(kind);
-    await fn(r.id);
+    setError(null);
+    const res = await fn(r.id);
+    if (!res?.ok) setError(res?.error || 'The request could not be updated.');
     setBusy(null);
   }
   return (
@@ -374,6 +386,7 @@ function FundingRow({ r, onApprove, onReject, onRevert, onReceipt }) {
           )
         )}
       </div>
+      {error && <p className="mt-2 text-[11px] text-loss">{error}</p>}
     </div>
   );
 }
