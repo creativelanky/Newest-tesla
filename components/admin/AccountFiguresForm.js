@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { apiSetAccountFigures } from '@/lib/api';
+import { apiCreateAdminDeposit, apiSetAccountFigures } from '@/lib/api';
 import { formatUSD } from '@/lib/store';
 
 function cleanAmount(value, allowNegative = false) {
@@ -19,6 +19,10 @@ export default function AccountFiguresForm({ user, onChanged }) {
   const [deposits, setDeposits] = useState(String(user.deposit_total ?? 0));
   const [profit, setProfit] = useState(String(user.profit ?? 0));
   const [busy, setBusy] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [depositMethod, setDepositMethod] = useState('bank');
+  const [depositReference, setDepositReference] = useState('');
+  const [depositBusy, setDepositBusy] = useState(false);
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
@@ -43,6 +47,26 @@ export default function AccountFiguresForm({ user, onChanged }) {
       return;
     }
     setMessage({ ok: true, text: 'Account figures saved.' });
+    onChanged?.();
+  }
+
+  async function recordDeposit() {
+    const value = Number(depositAmount);
+    if (!Number.isFinite(value) || value <= 0) {
+      setMessage({ ok: false, text: 'Enter a deposit amount greater than $0.' });
+      return;
+    }
+    setDepositBusy(true);
+    setMessage(null);
+    const res = await apiCreateAdminDeposit(user.id, value, depositMethod, depositReference);
+    setDepositBusy(false);
+    if (!res.ok) {
+      setMessage({ ok: false, text: res.error });
+      return;
+    }
+    setDepositAmount('');
+    setDepositReference('');
+    setMessage({ ok: true, text: 'Deposit recorded and approved.' });
     onChanged?.();
   }
 
@@ -76,6 +100,44 @@ export default function AccountFiguresForm({ user, onChanged }) {
         <button disabled={busy || invalid} onClick={save} className="btn-solid btn-sm min-w-28">
           {busy ? 'Saving...' : 'Save figures'}
         </button>
+      </div>
+
+      <div className="mt-6 border-t border-line pt-5">
+        <div className="text-[12px] font-semibold text-white">Record approved deposit</div>
+        <p className="mt-1 text-[11px] text-grey-500">Adds an approved deposit to the user’s deposit and transaction history.</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_10rem]">
+          <MoneyField
+            id={`admin-deposit-${user.id}`}
+            label="Deposit amount"
+            hint=""
+            value={depositAmount}
+            onChange={(value) => setDepositAmount(cleanAmount(value))}
+          />
+          <div>
+            <label htmlFor={`deposit-method-${user.id}`} className="text-[12px] font-medium text-white">Payment method</label>
+            <select
+              id={`deposit-method-${user.id}`}
+              value={depositMethod}
+              onChange={(event) => setDepositMethod(event.target.value)}
+              className="input mt-2 h-[42px] w-full text-[13px]"
+            >
+              <option value="bank">Bank transfer</option>
+              <option value="paypal">PayPal</option>
+              <option value="bitcoin">Bitcoin</option>
+            </select>
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-3">
+          <input
+            className="input min-w-0 flex-1 py-2.5 text-[13px]"
+            placeholder="Reference (optional)"
+            value={depositReference}
+            onChange={(event) => setDepositReference(event.target.value)}
+          />
+          <button disabled={depositBusy} onClick={recordDeposit} className="btn-outline btn-sm shrink-0">
+            {depositBusy ? 'Recording...' : 'Record deposit'}
+          </button>
+        </div>
       </div>
       {message && <p className={`mt-3 text-[12px] ${message.ok ? 'text-gain' : 'text-loss'}`}>{message.text}</p>}
     </div>

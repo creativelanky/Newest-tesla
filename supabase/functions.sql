@@ -354,6 +354,44 @@ begin
 end;
 $$;
 
+-- Creates an already-approved deposit when an admin has verified an offline
+-- payment. It writes both the funding record and the matching ledger credit.
+create or replace function admin_create_deposit(
+  p_user_id uuid,
+  p_amount numeric,
+  p_method funding_method,
+  p_reference text default ''
+)
+returns funding_requests
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_row funding_requests;
+begin
+  if not is_admin() then raise exception 'Admin only.'; end if;
+  if p_amount <= 0 then raise exception 'Deposit amount must be greater than $0.'; end if;
+  if not exists (select 1 from profiles where id = p_user_id) then raise exception 'User not found.'; end if;
+
+  insert into funding_requests (profile_id, kind, method, amount, reference, status, note, decided_at)
+  values (p_user_id, 'deposit', p_method, p_amount, coalesce(p_reference, ''), 'approved', 'Recorded by admin', now())
+  returning * into v_row;
+
+  update profiles
+  set balance = balance + p_amount,
+      deposit_total = deposit_total + p_amount
+  where id = p_user_id;
+
+  insert into transactions (profile_id, type, label, amount)
+  values (p_user_id, 'credit', 'Deposit approved - ' || p_method::text, p_amount);
+
+  perform notify(p_user_id, 'deposit', 'Deposit approved',
+    'Your deposit of $' || trim(to_char(p_amount, 'FM999999990.00')) || ' has been approved and credited.');
+  return v_row;
+end;
+$$;
+
 create or replace function admin_add_profit(p_user_id uuid, p_amount numeric, p_label text default 'Investment profit')
 returns void
 language plpgsql
