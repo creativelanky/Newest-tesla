@@ -1,8 +1,6 @@
 'use client';
 
 import { logOut } from '@/lib/store';
-import { openSupport } from '@/lib/support';
-import { IconChat } from './DeskIcons';
 
 // Full-screen lockout shown to suspended accounts on every authed surface
 // except /support. Money movement and trading are already blocked server-side;
@@ -39,12 +37,9 @@ export default function SuspendedScreen({ reason }) {
         )}
 
         <div className="mt-8 flex flex-col items-center gap-3">
-          <button onClick={openSupport} className="btn-scarlet btn-sm w-full max-w-xs gap-2">
-            <IconChat className="h-4 w-4" /> Message support
-          </button>
           <button
             onClick={() => logOut()}
-            className="text-[13px] tracking-wide text-grey-500 transition-colors hover:text-white"
+            className="btn-outline btn-sm w-full max-w-xs"
           >
             Log out
           </button>

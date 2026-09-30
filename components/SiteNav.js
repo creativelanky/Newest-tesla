@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Logo from './Logo';
 import NotificationBell from './NotificationBell';
-import { openSupport } from '@/lib/support';
 import { useStore, logOut, formatUSD } from '@/lib/store';
 import {
   IconGauge,
@@ -35,7 +34,7 @@ const APP_LINKS = [
   { href: '/holdings', label: 'Holdings', icon: IconLayers },
   { href: '/wallet', label: 'Wallet', icon: IconWalletLine },
   { href: '/tracking', label: 'Tracking', icon: IconPackage },
-  { key: 'support', label: 'Support', icon: IconChat, action: 'support' },
+  { href: '/dashboard', label: 'Support', icon: IconChat },
 ];
 
 export default function SiteNav() {
@@ -86,13 +85,6 @@ export default function SiteNav() {
             const cls = `rounded-md px-3 py-1.5 text-[12px] font-medium tracking-wider2 transition-colors ${
               active ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/[0.06] hover:text-white'
             }`;
-            if (l.action === 'support') {
-              return (
-                <button key="support" onClick={openSupport} className={cls}>
-                  {l.label}
-                </button>
-              );
-            }
             return (
               <Link key={l.href} href={l.href} aria-current={active ? 'page' : undefined} className={cls}>
                 {l.label}
@@ -177,14 +169,6 @@ export default function SiteNav() {
                 const cls = `flex items-center gap-3 rounded-lg px-3 py-3 text-[13px] font-medium tracking-wide transition-colors ${
                   active ? 'bg-white/10 text-white' : 'text-grey-300 hover:bg-white/[0.05] hover:text-white'
                 }`;
-                if (l.action === 'support') {
-                  return (
-                    <button key="support" onClick={() => { setOpen(false); openSupport(); }} className={`${cls} text-left`}>
-                      {chip}
-                      {l.label}
-                    </button>
-                  );
-                }
                 return (
                   <Link key={l.href} href={l.href} aria-current={active ? 'page' : undefined} className={cls}>
                     {chip}

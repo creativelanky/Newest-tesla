@@ -1,5 +1,4 @@
 import './globals.css';
-import Script from 'next/script';
 import { Inter, Barlow } from 'next/font/google';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
@@ -55,14 +54,6 @@ export default function RootLayout({ children }) {
         <SiteNav />
         <main className="flex-1">{children}</main>
         <SiteFooter />
-
-        {/* Chaport live chat — config + queue shim first, then the SDK is
-            loaded by next/script itself (more reliable than the vendor snippet's
-            manual insertBefore under production hydration). */}
-        <Script id="chaport-config" strategy="beforeInteractive">
-          {`window.chaportConfig={appId:'6a9fd7d74eabbf1177b1f38f'};if(!window.chaport){var v3=window.chaport={};v3._q=[];v3._l={};v3.q=function(){v3._q.push(arguments)};v3.on=function(e,fn){if(!v3._l[e])v3._l[e]=[];v3._l[e].push(fn)};}`}
-        </Script>
-        <Script id="chaport-sdk" src="https://app.chaport.com/javascripts/insert.js" strategy="afterInteractive" />
       </body>
     </html>
   );
