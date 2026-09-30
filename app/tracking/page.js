@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import DeskPage from '@/components/DeskPage';
 import { IconPackage } from '@/components/DeskIcons';
 
 const LABELS = {
@@ -41,9 +40,18 @@ function shortDate(value) {
 
 export default function TrackingPage() {
   return (
-    <DeskPage eyebrow="Logistics desk" title="Parcel Tracking" intro="Track assigned delivery codes, shipment status, route details, and delivery progress from your account.">
-      <TrackingDesk />
-    </DeskPage>
+    <div className="app-shell min-h-screen">
+      <div className="container-page pb-24 pt-28">
+        <p className="eyebrow flex items-center gap-2.5"><span className="live-dot" /> Logistics desk</p>
+        <h1 className="h1 mt-3 text-[clamp(1.9rem,4.4vw,3.2rem)] uppercase text-white">Parcel Tracking</h1>
+        <p className="body-lg mt-4 max-w-2xl">
+          Track assigned delivery codes, shipment status, route details, and delivery progress. No account login required.
+        </p>
+        <div className="mt-8">
+          <TrackingDesk />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -98,7 +106,7 @@ function TrackingDesk() {
             <div>
               <h2 className="text-[clamp(1.45rem,3vw,2.2rem)] font-semibold leading-tight text-white">Locate your parcel in real time.</h2>
               <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-grey-400">
-                Enter a tracking code or view the latest parcel assigned to your investment account.
+                Enter the code from your confirmation message to view shipment details instantly.
               </p>
             </div>
 
@@ -128,8 +136,8 @@ function TrackingDesk() {
       ) : !selected ? (
         <div className="tile p-12 text-center">
           <IconPackage className="mx-auto h-8 w-8 text-grey-500" />
-          <p className="mt-3 text-[14px] font-medium text-white">{searched ? 'No parcel found for that code.' : 'No parcels assigned yet.'}</p>
-          <p className="mt-1 text-[12px] text-grey-500">Admin-generated tracking codes will appear here.</p>
+          <p className="mt-3 text-[14px] font-medium text-white">{searched ? 'No parcel found for that code.' : 'Enter a tracking code to begin.'}</p>
+          <p className="mt-1 text-[12px] text-grey-500">Tracking details are available to anyone with a valid code.</p>
         </div>
       ) : (
         <div className="space-y-6">

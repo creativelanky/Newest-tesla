@@ -126,6 +126,9 @@ export default function AdminParcels({ users }) {
 
       <form onSubmit={createParcel} className="tile p-5">
         <h3 className="tile-title flex items-center gap-2.5"><span className="icon-chip"><IconPackage className="h-3.5 w-3.5" /></span>Create tracking code</h3>
+        <p className="mt-2 text-[12px] text-grey-500">
+          Generated codes can be checked publicly on the Tracking page without requiring the recipient to sign in.
+        </p>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           <label>
             <span className="stat-label">User</span>
@@ -179,6 +182,7 @@ export default function AdminParcels({ users }) {
                       </div>
                       <p className="mt-1 text-[11px] text-grey-500">{parcel.profiles?.name || parcel.profiles?.email || 'Unknown user'}</p>
                       <code className="mt-2 inline-block rounded border border-line bg-ink px-2 py-1 text-[12px] text-grey-200">{parcel.tracking_code}</code>
+                      <p className="mt-1 text-[11px] text-grey-600">Public lookup enabled</p>
                       <p className="mt-2 text-[12px] text-grey-500">{parcel.origin || 'Origin pending'} → {parcel.destination || 'Destination pending'}</p>
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-[150px_170px_150px_200px_auto]">

@@ -23,6 +23,7 @@ const MARKETING_LINKS = [
   { href: '/#starlink', label: 'Starlink' },
   { href: '/#vision', label: 'The Mission' },
   { href: '/#opportunities', label: 'Invest' },
+  { href: '/tracking', label: 'Tracking' },
   { href: '/#faq', label: 'FAQ' },
 ];
 
