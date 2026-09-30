@@ -13,7 +13,7 @@ const admin = createClient(url, serviceKey, {
 const TABLES = [
   'profiles', 'holdings', 'positions', 'options_positions', 'copy_allocations',
   'ipo_reservations', 'transactions', 'funding_requests', 'kyc_docs',
-  'messages', 'platform_settings',
+  'messages', 'notifications', 'parcel_trackings', 'platform_settings',
 ];
 
 let allOk = true;

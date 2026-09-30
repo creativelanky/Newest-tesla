@@ -65,6 +65,7 @@ create table if not exists profiles (
   city text not null default '',
   role text not null default 'user',            -- 'user' | 'admin'
   status account_status not null default 'active',
+  suspend_reason text not null default '',
   kyc_status kyc_status not null default 'none',
   kyc_note text not null default '',
   balance numeric(14, 2) not null default 0,
@@ -160,6 +161,16 @@ create table if not exists messages (
   created_at timestamptz not null default now()
 );
 
+create table if not exists notifications (
+  id uuid primary key default gen_random_uuid(),
+  profile_id uuid not null references profiles (id) on delete cascade,
+  kind text not null default 'system',
+  title text not null,
+  body text not null default '',
+  read boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists parcel_trackings (
   id uuid primary key default gen_random_uuid(),
   profile_id uuid not null references profiles (id) on delete cascade,
@@ -220,6 +231,7 @@ alter table transactions enable row level security;
 alter table funding_requests enable row level security;
 alter table kyc_docs enable row level security;
 alter table messages enable row level security;
+alter table notifications enable row level security;
 alter table parcel_trackings enable row level security;
 alter table platform_settings enable row level security;
 
@@ -267,6 +279,15 @@ drop policy if exists "settings_update_admin" on platform_settings;
 create policy "settings_update_admin" on platform_settings for update
   using (is_admin());
 
+drop policy if exists "notif_select_own" on notifications;
+create policy "notif_select_own" on notifications for select
+  using (profile_id = auth.uid() or is_admin());
+
+drop policy if exists "notif_update_own" on notifications;
+create policy "notif_update_own" on notifications for update
+  using (profile_id = auth.uid());
+
+create index if not exists notifications_profile_idx on notifications (profile_id, created_at desc);
 create index if not exists parcel_trackings_profile_id_idx on parcel_trackings (profile_id);
 create index if not exists parcel_trackings_tracking_code_idx on parcel_trackings (tracking_code);
 
