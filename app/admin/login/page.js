@@ -12,7 +12,7 @@ import PasswordField from '@/components/PasswordField';
 // no user dashboard in between.
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('support@endlesspeakinvestment.xyz');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
